@@ -1,0 +1,6 @@
+{
+  "name": "TutorMate EdTech",
+  "description": "Nền tảng tìm kiếm gia sư bằng AI thông minh, hỗ trợ kết nối Phụ huynh, Gia sư và Điều phối viên (Operator).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
