@@ -96,6 +96,14 @@ export default function ParentView({
   const [eventReviewText, setEventReviewText] = useState<string>('');
   const [eventReviewSubmitted, setEventReviewSubmitted] = useState<boolean>(false);
   const [replacementContext, setReplacementContext] = useState<any>(null);
+
+  // P-13 states
+  const [complaintParentName, setComplaintParentName] = useState('');
+  const [complaintPhone, setComplaintPhone] = useState('');
+  const [complaintTutorName, setComplaintTutorName] = useState('Nguyễn Hà My');
+  const [complaintDetail, setComplaintDetail] = useState('');
+  const [complaintType, setComplaintType] = useState('Hoàn trả tiền cọc Escrow (100%)');
+  const [complaintSubmitted, setComplaintSubmitted] = useState(false);
   
   // List of active matched mock classes/events for Parent calendar
   const calendarEvents = [
@@ -1957,29 +1965,235 @@ export default function ParentView({
       {/* P-13: Nhân viên / an toàn               */}
       {/* ======================================= */}
       {activeSubPage === 'P-13' && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6 text-xs">
-          <div>
-            <h2 className="text-lg font-bold text-slate-900">Trung Tâm Hỗ Trợ Khách Hàng & An Toàn</h2>
-            <p className="text-xs text-slate-500">Cam kết bảo chứng quyền lợi cho phụ huynh và học sinh</p>
+        <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 shadow-sm space-y-6 text-xs">
+          
+          {/* Header */}
+          <div className="bg-white border border-slate-200 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-1.5">
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-rose-600 animate-pulse"></span>
+                Trung Tâm Phản Ánh & Bảo Vệ Khách Hàng
+              </h2>
+              <p className="text-[11px] text-slate-500 mt-0.5">Tiếp nhận khiếu nại dịch vụ 24/7 và hỗ trợ giải quyết tranh chấp ký quỹ Escrow</p>
+            </div>
+            <span className="text-[10px] bg-rose-50 text-rose-700 font-extrabold px-3 py-1 rounded-full border border-rose-100">
+              ⚡ Cam kết phản hồi trong 15 phút
+            </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="border border-slate-100 bg-slate-50 p-5 rounded-xl space-y-3">
-              <h3 className="font-bold text-slate-800 text-sm">🛡 Quy trình Escrow bảo vệ tài chính</h3>
-              <p className="text-slate-600 leading-relaxed">
-                TutorMate áp dụng cơ chế ví trung gian giữ phí học thử. Tiền chỉ được chuyển giao cho gia sư sau khi buổi học thử được phụ huynh đánh giá thành công. Nếu gia sư vắng mặt hoặc chất lượng kém, tiền cọc được hoàn trả 100% trong 24h.
-              </p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            
+            {/* Left Column (lg:col-span-7): Service Complaint Form */}
+            <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-5 shadow-3xs flex flex-col justify-between">
+              
+              {complaintSubmitted ? (
+                // Success state of the complaint form
+                <div className="text-center py-8 space-y-4">
+                  <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-100 animate-bounce">
+                    <Check className="w-8 h-8" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <h3 className="font-extrabold text-slate-800 text-sm">Gửi Khiếu Nại Thành Công!</h3>
+                    <p className="text-[11px] text-slate-500 leading-relaxed px-4">
+                      Yêu cầu phản ánh sự cố dịch vụ của phụ huynh <strong>{complaintParentName || 'Thành viên'}</strong> đã được bàn giao trực tiếp tới tổ công tác đặc biệt của **TutorMate**. 
+                    </p>
+                    <p className="text-[10px] text-rose-600 font-bold bg-rose-50 py-2 px-3 rounded-lg mt-2 inline-block">
+                      📞 Tổng đài viên sẽ chủ động gọi điện tới SĐT {complaintPhone || 'của bạn'} trong vòng tối đa 15 phút.
+                    </p>
+                  </div>
+                  <div className="pt-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setComplaintSubmitted(false);
+                        setComplaintDetail('');
+                        setComplaintParentName('');
+                        setComplaintPhone('');
+                      }}
+                      className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg cursor-pointer transition-colors"
+                    >
+                      Tạo khiếu nại mới
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                // Complaint Form input state
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!complaintParentName || !complaintPhone || !complaintDetail) {
+                      alert("Vui lòng điền đầy đủ thông tin để gửi khiếu nại!");
+                      return;
+                    }
+                    setComplaintSubmitted(true);
+                  }}
+                  className="space-y-4"
+                >
+                  <div>
+                    <h3 className="font-bold text-slate-800 text-xs flex items-center gap-1">
+                      📝 Điền phiếu khiếu nại trực tuyến
+                    </h3>
+                    <p className="text-[10px] text-slate-400">Yêu cầu của bạn sẽ được chuyển thành vé xử lý khẩn cấp trên hệ thống hàng đợi Operator.</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label className="block text-slate-600 font-bold mb-1">Họ tên phụ huynh:</label>
+                      <input 
+                        type="text"
+                        required
+                        placeholder="Nguyễn Văn A"
+                        value={complaintParentName}
+                        onChange={(e) => setComplaintParentName(e.target.value)}
+                        className="w-full px-3 py-1.5 border border-slate-200 bg-white rounded-lg outline-none focus:border-rose-500 text-[11px] text-slate-800"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-600 font-bold mb-1">Số điện thoại liên lạc:</label>
+                      <input 
+                        type="tel"
+                        required
+                        placeholder="09xx xxx xxx"
+                        value={complaintPhone}
+                        onChange={(e) => setComplaintPhone(e.target.value)}
+                        className="w-full px-3 py-1.5 border border-slate-200 bg-white rounded-lg outline-none focus:border-rose-500 text-[11px] text-slate-800 font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label className="block text-slate-600 font-bold mb-1">Gia sư liên quan:</label>
+                      <select 
+                        value={complaintTutorName}
+                        onChange={(e) => setComplaintTutorName(e.target.value)}
+                        className="w-full px-2.5 py-1.5 border border-slate-200 bg-white rounded-lg outline-none focus:border-rose-500 text-[11px] text-slate-700 font-bold cursor-pointer"
+                      >
+                        <option value="Nguyễn Hà My">Gia sư Nguyễn Hà My (Toán)</option>
+                        <option value="Trần Minh Đức">Gia sư Trần Minh Đức (Toán)</option>
+                        <option value="Lê Thị Phương Thảo">Gia sư Lê Thị Phương Thảo (Anh)</option>
+                        <option value="Vũ Minh Tuấn">Gia sư Vũ Minh Tuấn (Lý)</option>
+                        <option value="Khác">Gia sư / Trường hợp khác</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-slate-600 font-bold mb-1">Loại sự cố khiếu nại:</label>
+                      <select 
+                        value={complaintType}
+                        onChange={(e) => setComplaintType(e.target.value)}
+                        className="w-full px-2.5 py-1.5 border border-slate-200 bg-white rounded-lg outline-none focus:border-rose-500 text-[11px] text-slate-700 font-bold cursor-pointer"
+                      >
+                        <option value="Hoàn trả tiền cọc Escrow (100%)">Yêu cầu hoàn trả tiền cọc Escrow (100%)</option>
+                        <option value="Gia sư vắng mặt không báo trước">Gia sư vắng mặt không thông báo trước</option>
+                        <option value="Thái độ giảng dạy không đúng mực">Thái độ giảng dạy thiếu chuẩn mực</option>
+                        <option value="Sai lệch chuyên môn kiến thức">Gia sư sai lệch chuyên môn kiến thức</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-600 font-bold mb-1">Chi tiết phản ánh & mô tả sự việc:</label>
+                    <textarea 
+                      rows={3}
+                      required
+                      value={complaintDetail}
+                      onChange={(e) => setComplaintDetail(e.target.value)}
+                      placeholder="Mời phụ huynh mô tả chi tiết diễn biến sự việc, thời gian xảy ra sự cố để ban thanh tra dễ dàng đối chiếu và xử lý..."
+                      className="w-full px-3 py-2 border border-slate-200 bg-white rounded-xl outline-none focus:border-rose-500 text-[11px] text-slate-800 leading-relaxed"
+                    ></textarea>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-xl cursor-pointer text-center text-xs transition-colors flex items-center justify-center gap-1.5 shadow-sm shadow-rose-500/10"
+                  >
+                    ⚠️ GỬI KHIẾU NẠI KHẨN CẤP
+                  </button>
+                </form>
+              )}
             </div>
 
-            <div className="border border-slate-100 bg-slate-50 p-5 rounded-xl space-y-3">
-              <h3 className="font-bold text-slate-800 text-sm">📞 Hotline hỗ trợ khẩn cấp 24/7</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Đội ngũ Operator chuyên nghiệp sẵn sàng can thiệp giải quyết mọi mâu thuẫn học thuật, hành vi không đúng đắn hoặc điều chỉnh lịch học khẩn cấp.
-              </p>
-              <div className="font-bold text-blue-700 bg-white border border-blue-100 p-2.5 rounded-lg text-center font-mono">
-                HOTLINE: 1900 - 8899 - TMT
+            {/* Right Column (lg:col-span-5): Direct Instant Contact Channels */}
+            <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-5 shadow-3xs flex flex-col justify-between space-y-4">
+              <div>
+                <h3 className="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                  📞 Đường dây liên lạc trực tiếp khẩn cấp
+                </h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">Không muốn đợi điền form? Kết nối trực tiếp ngay với tư vấn viên hỗ trợ 24/7 qua các kênh:</p>
               </div>
+
+              {/* Stack of Instant Contacts */}
+              <div className="space-y-2.5">
+                {/* 1. Gọi điện HOTLINE */}
+                <a 
+                  href="tel:19008899" 
+                  className="flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white p-3 rounded-xl transition-all shadow-xs group"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white shrink-0 font-bold">
+                    📞
+                  </div>
+                  <div>
+                    <strong className="block text-xs uppercase tracking-wider font-black text-white">GỌI ĐIỆN KHẨN CẤP</strong>
+                    <span className="text-[10px] text-red-100 font-mono">Phím nóng 24/7: 1900-8899-TMT</span>
+                  </div>
+                </a>
+
+                {/* 2. Gửi SMS trực tiếp */}
+                <a 
+                  href="sms:0988888888" 
+                  className="flex items-center gap-3 bg-slate-800 hover:bg-slate-900 text-white p-3 rounded-xl transition-all shadow-xs group"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white shrink-0 font-bold">
+                    ✉️
+                  </div>
+                  <div>
+                    <strong className="block text-xs uppercase tracking-wider font-black text-white">GỬI SMS TRỰC TIẾP</strong>
+                    <span className="text-[10px] text-slate-300 font-mono">Báo tin khẩn: 0988.888.888</span>
+                  </div>
+                </a>
+
+                {/* 3. Zalo chat */}
+                <a 
+                  href="https://zalo.me" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="flex items-center gap-3 bg-[#0068FF] hover:bg-[#005AE0] text-white p-3 rounded-xl transition-all shadow-xs"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white shrink-0 font-black text-xs font-sans">
+                    Zalo
+                  </div>
+                  <div>
+                    <strong className="block text-xs uppercase tracking-wider font-black text-white">CHAT ZALO HỖ TRỢ</strong>
+                    <span className="text-[10px] text-blue-100">Kết nối tức thì với Operator phòng tranh chấp</span>
+                  </div>
+                </a>
+
+                {/* 4. Facebook Messenger */}
+                <a 
+                  href="https://m.me" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="flex items-center gap-3 bg-[#1877F2] hover:bg-[#166FE5] text-white p-3 rounded-xl transition-all shadow-xs"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white shrink-0 font-bold">
+                    💬
+                  </div>
+                  <div>
+                    <strong className="block text-xs uppercase tracking-wider font-black text-white">FACEBOOK MESSENGER</strong>
+                    <span className="text-[10px] text-blue-100">Phản hồi thần tốc qua Fanpage chính thức</span>
+                  </div>
+                </a>
+              </div>
+
+              {/* Escrow note */}
+              <div className="bg-rose-50 border border-rose-100 p-3 rounded-xl">
+                <p className="text-[10px] text-rose-800 leading-relaxed font-semibold">
+                  🛡️ <strong>Chính sách hoàn cọc Escrow:</strong> Mọi khoản đặt cọc của phụ huynh được đóng băng an toàn trong hệ thống Escrow. Tranh chấp sẽ được phân xử công tâm và hoàn trả trong tối đa 24 giờ.
+                </p>
+              </div>
+
             </div>
+
           </div>
         </div>
       )}
