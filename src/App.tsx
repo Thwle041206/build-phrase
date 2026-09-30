@@ -24,6 +24,7 @@ export default function App() {
   const [regPassword, setRegPassword] = useState('');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [authRole, setAuthRole] = useState<Role>('parent');
 
   // Global Demand Profile shared state representing parents' selections
   const [currentProfile, setCurrentProfile] = useState<DemandProfile>({
@@ -47,7 +48,7 @@ export default function App() {
     if (role === 'parent') {
       setActiveSubPage('P-02'); // Back to Chat AI
     } else if (role === 'tutor') {
-      setActiveSubPage('T-04 Hộp yêu cầu học thử');
+      setActiveSubPage('T-03 Trạng thái xác minh');
     } else if (role === 'operator') {
       setActiveSubPage('O-01 Dashboard & hàng đợi');
     }
@@ -56,90 +57,80 @@ export default function App() {
   // Define sidebar menu configurations based on F-1 Sitemap for all 3 roles
   const parentMenuGroups = [
     {
-      title: 'Tab Tìm gia sư',
+      title: 'Tìm kiếm gia sư',
       items: [
-        { id: 'P-01', label: 'Trang chủ' },
-        { id: 'P-02', label: 'Lịch sử đoạn chat' },
+        { id: 'P-01', label: '🤖 Đề xuất gia sư AI' },
+        { id: 'P-02', label: '💬 Trò chuyện & Yêu cầu' },
       ]
     },
     {
-      title: 'Tab Đã lưu',
+      title: 'Lưu trữ',
       items: [
-        { id: 'Danh sách gia sư đã lưu', label: 'Quản lý gia sư đã lưu' }
+        { id: 'Danh sách gia sư đã lưu', label: '❤️ Gia sư đã lưu' }
       ]
     },
     {
-      title: 'Tab Lịch học thử',
+      title: 'Lịch học thử',
       items: [
-        { id: 'P-11', label: 'P-11 Trạng thái lịch' },
-        { id: 'P-12', label: 'P-12 Đánh giá & thay thế' },
+        { id: 'P-11', label: '📅 Trạng thái lịch học thử' },
+        { id: 'P-12', label: '⭐️ Đánh giá & Đổi gia sư' },
       ]
     },
     {
-      title: 'Tab Hỗ trợ',
+      title: 'Trợ giúp',
       items: [
-        { id: 'P-13', label: 'P-13 Nhân viên / an toàn' }
+        { id: 'P-13', label: '🛡️ Hỗ trợ sự cố & An toàn' }
       ]
     }
   ];
 
   const tutorMenuGroups = [
     {
-      title: 'Tab Yêu cầu',
+      title: 'Tài khoản gia sư',
       items: [
-        { id: 'T-04 Hộp yêu cầu học thử', label: 'T-04 Hộp yêu cầu dạy thử' }
+        { id: 'T-03 Trạng thái xác minh', label: '👤 Hồ sơ cá nhân' },
+        { id: 'T-01 Tạo/sửa hồ sơ', label: '✏️ Cập nhật thông tin gia sư' },
+        { id: 'T-04 Hộp yêu cầu học thử', label: '📅 Quản lý lịch dạy' },
+        { id: 'T-05 Phản hồi sau học thử', label: '💬 Quản lý phản hồi' }
       ]
     },
     {
-      title: 'Tab Hồ sơ & lịch',
+      title: 'Hỗ trợ & liên hệ',
       items: [
-        { id: 'T-01 Tạo/sửa hồ sơ', label: 'T-01 Tạo/sửa hồ sơ' },
-        { id: 'T-02 Tải giấy tờ', label: 'T-02 Tải giấy tờ' }
-      ]
-    },
-    {
-      title: 'Tab Xác minh',
-      items: [
-        { id: 'T-03 Trạng thái xác minh', label: 'T-03 Trạng thái xác minh' }
-      ]
-    },
-    {
-      title: 'Tab Phản hồi',
-      items: [
-        { id: 'T-05 Phản hồi sau học thử', label: 'T-05 Phản hồi sau học thử' }
+        { id: 'Trung tâm trợ giúp', label: '❓ Trung tâm trợ giúp' }
       ]
     }
   ];
 
   const operatorMenuGroups = [
     {
-      title: 'Menu Hàng đợi',
+      title: 'Hàng đợi vận hành',
       items: [
-        { id: 'O-01 Dashboard & hàng đợi', label: 'O-01 Dashboard & hàng đợi' }
+        { id: 'O-01 Dashboard & hàng đợi', label: '📊 Hàng đợi yêu cầu dạy học' }
       ]
     },
     {
-      title: 'Menu Xác minh gia sư',
+      title: 'Thẩm định chất lượng',
       items: [
-        { id: 'O-02 Duyệt hồ sơ', label: 'O-02 Duyệt hồ sơ' }
+        { id: 'O-02 Duyệt hồ sơ', label: '🛡️ Phê duyệt hồ sơ gia sư' }
       ]
     },
     {
-      title: 'Menu Escalation',
+      title: 'Xử lý sự cố',
       items: [
-        { id: 'O-03 Chi tiết case', label: 'O-03 Chi tiết case' }
+        { id: 'O-03 Chi tiết case', label: '🚨 Giải quyết tranh chấp (Escalations)' }
       ]
     },
     {
-      title: 'Menu Trace Agent',
+      title: 'Giải thuật Matching',
       items: [
-        { id: 'O-04 Trace & lý do hiển thị', label: 'O-04 Trace & lý do hiển thị' }
+        { id: 'O-04 Trace & lý do hiển thị', label: '🔍 Tra cứu thuật toán Matching' }
       ]
     },
     {
-      title: 'Menu Báo cáo',
+      title: 'Thống kê',
       items: [
-        { id: 'Báo cáo tuần (Should, ngoài wireframe)', label: 'Báo cáo tuần (Bổ sung)' }
+        { id: 'Báo cáo tuần (Should, ngoài wireframe)', label: '📈 Báo cáo vận hành hàng tuần' }
       ]
     }
   ];
@@ -261,7 +252,14 @@ export default function App() {
             <span aria-hidden="true">&middot;</span>
             <span className="capitalize">{currentRole === 'parent' ? 'Phụ huynh & Học sinh' : currentRole === 'tutor' ? 'Gia sư (Tutor)' : 'Điều phối viên (Operator)'}</span>
             <span aria-hidden="true">&middot;</span>
-            <span className="text-slate-700 font-bold">{activeSubPage}</span>
+            <span className="text-slate-700 font-bold">
+              {(() => {
+                const foundItem = currentMenuGroups
+                  .flatMap(g => g.items)
+                  .find(item => item.id === activeSubPage);
+                return foundItem ? foundItem.label : activeSubPage;
+              })()}
+            </span>
           </div>
 
           {/* Active Dashboard Views */}
@@ -406,105 +404,167 @@ export default function App() {
                 </div>
               ) : (
                 // Form input mode
-                <form 
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (authMode === 'register') {
-                      setIsRegisteredSuccess(true);
-                    } else {
-                      // Login success handles silently
+                <div className="space-y-4 text-xs">
+                  
+                  {/* Google OAuth Button with authentic G logo */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const name = authRole === 'parent' ? 'Phụ huynh' : authRole === 'tutor' ? 'Gia sư Nguyễn Văn A' : 'Điều phối viên Trực';
+                      alert(`[Google Sign-In] Đăng nhập bằng Google thành công!\nChào mừng ${name} đã đồng bộ qua tài khoản Google.`);
+                      handleRoleChange(authRole);
                       setAuthModalOpen(false);
-                    }
-                  }}
-                  className="space-y-4 text-xs"
-                >
-                  {authMode === 'register' && (
+                    }}
+                    className="w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 py-2.5 px-4 rounded-xl font-bold cursor-pointer transition-all shadow-3xs"
+                  >
+                    {/* Google G Logo SVG */}
+                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.18 1-.78 1.85-1.63 2.42v2.01h2.64c1.55-1.42 2.63-3.53 2.63-6.44z"/>
+                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-2.64-2.01c-.73.49-1.66.78-2.64.78-2.83 0-5.22-1.91-6.07-4.49H1.14v2.07C2.96 20.36 7.15 23 12 23z"/>
+                      <path fill="#FBBC05" d="M5.93 14.62c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V8.37H1.14C.41 9.81 0 11.4 0 13s.41 3.19 1.14 4.63l4.79-3.01z"/>
+                      <path fill="#EA4335" d="M12 4.75c1.62 0 3.08.56 4.22 1.66l3.16-3.16C17.45 1.41 14.97 1 12 1 7.15 1 2.96 3.64 1.14 7.21l4.79 3.01c.85-2.58 3.24-4.47 6.07-4.47z"/>
+                    </svg>
+                    <span>
+                      {authMode === 'login' ? 'Đăng nhập với Google' : 'Đăng ký nhanh với Google'}
+                    </span>
+                  </button>
+
+                  <div className="flex items-center gap-3 my-2">
+                    <div className="h-px bg-slate-150 flex-1"></div>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase shrink-0">Hoặc tiếp tục với Email</span>
+                    <div className="h-px bg-slate-150 flex-1"></div>
+                  </div>
+
+                  <form 
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (authMode === 'register') {
+                        setIsRegisteredSuccess(true);
+                        // Trigger role update
+                        handleRoleChange(authRole);
+                      } else {
+                        // Login success
+                        handleRoleChange(authRole);
+                        alert(`Đăng nhập thành công với vai trò: ${authRole === 'parent' ? 'Phụ huynh' : authRole === 'tutor' ? 'Gia sư' : 'Điều phối viên'}`);
+                        setAuthModalOpen(false);
+                      }
+                    }}
+                    className="space-y-4"
+                  >
+                    
+                    {/* Role Selection Container */}
+                    <div className="space-y-1.5 bg-slate-50 border border-slate-100 p-3 rounded-xl">
+                      <label className="block text-slate-600 font-extrabold text-[10px] uppercase">Chọn vai trò của bạn:</label>
+                      <div className="grid grid-cols-3 gap-1.5">
+                        {[
+                          { id: 'parent', label: '👨‍👩‍👦 Phụ huynh' },
+                          { id: 'tutor', label: '🎓 Gia sư' },
+                          { id: 'operator', label: '🛡️ Admin/Op' }
+                        ].map(r => (
+                          <button
+                            key={r.id}
+                            type="button"
+                            onClick={() => setAuthRole(r.id as any)}
+                            className={`py-1.5 rounded-lg text-[9px] font-extrabold text-center border transition-all cursor-pointer ${
+                              authRole === r.id 
+                                ? 'bg-blue-600 text-white border-blue-700 shadow-3xs' 
+                                : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-600'
+                            }`}
+                          >
+                            {r.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {authMode === 'register' && (
+                      <div>
+                        <label className="block text-slate-700 font-bold mb-1">Họ và tên của bạn:</label>
+                        <input 
+                          type="text" 
+                          placeholder="Nguyễn Văn A"
+                          value={regName}
+                          onChange={(e) => setRegName(e.target.value)}
+                          className="w-full px-3.5 py-2 border border-slate-200 rounded-lg outline-none focus:border-blue-500 bg-white"
+                          required
+                        />
+                      </div>
+                    )}
+
                     <div>
-                      <label className="block text-slate-700 font-bold mb-1">Họ và tên của bạn:</label>
+                      <label className="block text-slate-700 font-bold mb-1">Địa chỉ Email:</label>
                       <input 
-                        type="text" 
-                        placeholder="Nguyễn Văn A"
-                        value={regName}
-                        onChange={(e) => setRegName(e.target.value)}
+                        type="email" 
+                        placeholder="tenban@gmail.com"
+                        value={authMode === 'register' ? regEmail : loginEmail}
+                        onChange={(e) => authMode === 'register' ? setRegEmail(e.target.value) : setLoginEmail(e.target.value)}
+                        className="w-full px-3.5 py-2 border border-slate-200 rounded-lg outline-none focus:border-blue-500 bg-white font-mono"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-700 font-bold mb-1">Mật khẩu:</label>
+                      <input 
+                        type="password" 
+                        placeholder="••••••••"
+                        value={authMode === 'register' ? regPassword : loginPassword}
+                        onChange={(e) => authMode === 'register' ? setRegPassword(e.target.value) : setLoginPassword(e.target.value)}
                         className="w-full px-3.5 py-2 border border-slate-200 rounded-lg outline-none focus:border-blue-500 bg-white"
                         required
                       />
                     </div>
-                  )}
 
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Địa chỉ Email:</label>
-                    <input 
-                      type="email" 
-                      placeholder="tenban@gmail.com"
-                      value={authMode === 'register' ? regEmail : loginEmail}
-                      onChange={(e) => authMode === 'register' ? setRegEmail(e.target.value) : setLoginEmail(e.target.value)}
-                      className="w-full px-3.5 py-2 border border-slate-200 rounded-lg outline-none focus:border-blue-500 bg-white font-mono"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-slate-700 font-bold mb-1">Mật khẩu:</label>
-                    <input 
-                      type="password" 
-                      placeholder="••••••••"
-                      value={authMode === 'register' ? regPassword : loginPassword}
-                      onChange={(e) => authMode === 'register' ? setRegPassword(e.target.value) : setLoginPassword(e.target.value)}
-                      className="w-full px-3.5 py-2 border border-slate-200 rounded-lg outline-none focus:border-blue-500 bg-white"
-                      required
-                    />
-                  </div>
-
-                  {authMode === 'register' ? (
-                    <button
-                      type="submit"
-                      className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl cursor-pointer transition-colors text-center shadow-sm shadow-blue-500/10"
-                    >
-                      Đăng Ký Tài Khoản Mới
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      className="w-full py-2.5 bg-[#1E40AF] hover:bg-blue-800 text-white font-bold rounded-xl cursor-pointer transition-colors text-center shadow-sm shadow-blue-500/10"
-                    >
-                      Đăng Nhập Ngay
-                    </button>
-                  )}
-
-                  {/* Switch Links */}
-                  <div className="pt-2 border-t border-slate-100 text-center">
-                    {authMode === 'login' ? (
-                      <p className="text-slate-500 text-[11px]">
-                        Chưa có tài khoản TutorMate?{' '}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setAuthMode('register');
-                            setIsRegisteredSuccess(false);
-                          }}
-                          className="text-blue-600 font-bold hover:underline cursor-pointer"
-                        >
-                          Đăng ký miễn phí
-                        </button>
-                      </p>
+                    {authMode === 'register' ? (
+                      <button
+                        type="submit"
+                        className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl cursor-pointer transition-colors text-center shadow-sm shadow-blue-500/10"
+                      >
+                        Đăng Ký Tài Khoản Mới
+                      </button>
                     ) : (
-                      <p className="text-slate-500 text-[11px]">
-                        Đã có tài khoản từ trước?{' '}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setAuthMode('login');
-                            setIsRegisteredSuccess(false);
-                          }}
-                          className="text-blue-600 font-bold hover:underline cursor-pointer"
-                        >
-                          Đăng nhập tại đây
-                        </button>
-                      </p>
+                      <button
+                        type="submit"
+                        className="w-full py-2.5 bg-[#1E40AF] hover:bg-blue-800 text-white font-bold rounded-xl cursor-pointer transition-colors text-center shadow-sm shadow-blue-500/10"
+                      >
+                        Đăng Nhập Ngay
+                      </button>
                     )}
-                  </div>
-                </form>
+
+                    {/* Switch Links */}
+                    <div className="pt-2 border-t border-slate-100 text-center">
+                      {authMode === 'login' ? (
+                        <p className="text-slate-500 text-[11px]">
+                          Chưa có tài khoản TutorMate?{' '}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAuthMode('register');
+                              setIsRegisteredSuccess(false);
+                            }}
+                            className="text-blue-600 font-bold hover:underline cursor-pointer"
+                          >
+                            Đăng ký miễn phí
+                          </button>
+                        </p>
+                      ) : (
+                        <p className="text-slate-500 text-[11px]">
+                          Đã có tài khoản từ trước?{' '}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAuthMode('login');
+                              setIsRegisteredSuccess(false);
+                            }}
+                            className="text-blue-600 font-bold hover:underline cursor-pointer"
+                          >
+                            Đăng nhập tại đây
+                          </button>
+                        </p>
+                      )}
+                    </div>
+                  </form>
+                </div>
               )}
             </div>
           </div>
