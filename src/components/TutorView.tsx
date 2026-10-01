@@ -124,6 +124,31 @@ export default function TutorView({ activeSubPage, onNavigateSubPage }: TutorVie
   const [selectedRatingFilter, setSelectedRatingFilter] = useState<string>('All');
   const [selectedTagFilter, setSelectedTagFilter] = useState<string>('All');
 
+  // Interactive AI Assistant states
+  const [assistantMessages, setAssistantMessages] = useState<Array<{
+    sender: 'ai' | 'user';
+    text: string;
+    timestamp: string;
+    options?: Array<{ label: string; value: string; field: string }>;
+  }>>([
+    {
+      sender: 'ai',
+      text: 'Xin chào quý Thầy/Cô! Tôi là Trợ lý AI đồng hành hỗ trợ thiết lập hồ sơ gia sư. Tôi sẽ hướng dẫn Thầy/Cô hoàn thành các mục thông tin cá nhân cực kỳ nhanh chóng bằng cách tick chọn gợi ý thay vì gõ phím thủ công. 😉',
+      timestamp: 'Vừa xong'
+    },
+    {
+      sender: 'ai',
+      text: 'Trước tiên, Học vị cao nhất hiện tại của Thầy/Cô là gì?',
+      timestamp: 'Vừa xong',
+      options: [
+        { label: '🎓 Đại học', value: 'Đại học', field: 'highestDegree' },
+        { label: '🎓 Thạc sĩ', value: 'Thạc sĩ', field: 'highestDegree' },
+        { label: '🎓 Tiến sĩ', value: 'Tiến sĩ', field: 'highestDegree' }
+      ]
+    }
+  ]);
+  const [aiChatInput, setAiChatInput] = useState('');
+
   const [uploadedFiles, setUploadedFiles] = useState<{ cccd: boolean; diploma: boolean; studentCard: boolean }>({
     cccd: true,
     diploma: true,
@@ -1824,8 +1849,256 @@ export default function TutorView({ activeSubPage, onNavigateSubPage }: TutorVie
       )}
 
       {/* ======================================= */}
-      {/* T-03: Hồ sơ cá nhân (Renamed & Upgraded) */}
+      {/* Tutor-AI-Assistant: Trợ lý AI hồ sơ     */}
       {/* ======================================= */}
+      {activeSubPage === 'Tutor-AI-Assistant' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start text-xs text-slate-700">
+          
+          {/* Left Column: Interactive Chat Bot Panel (8 cols) */}
+          <div className="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col h-[580px]">
+            
+            {/* Bot Header info */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
+              <div className="flex items-center gap-2.5 text-left">
+                <span className="w-9 h-9 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center text-lg font-bold shrink-0">
+                  🤖
+                </span>
+                <div>
+                  <strong className="text-slate-800 text-xs font-black block leading-none">Trợ lý AI Thiết lập Hồ sơ</strong>
+                  <span className="text-[9px] text-emerald-500 font-bold flex items-center gap-1 mt-1">
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
+                    Đang trực tuyến (Online)
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setAssistantMessages([
+                    {
+                      sender: 'ai',
+                      text: 'Xin chào quý Thầy/Cô! Tôi là Trợ lý AI đồng hành hỗ trợ thiết lập hồ sơ gia sư. Tôi sẽ hướng dẫn Thầy/Cô hoàn thành các mục thông tin cá nhân cực kỳ nhanh chóng bằng cách tick chọn gợi ý thay vì gõ phím thủ công. 😉',
+                      timestamp: 'Vừa xong'
+                    },
+                    {
+                      sender: 'ai',
+                      text: 'Trước tiên, Học vị cao nhất hiện tại của Thầy/Cô là gì?',
+                      timestamp: 'Vừa xong',
+                      options: [
+                        { label: '🎓 Đại học', value: 'Đại học', field: 'highestDegree' },
+                        { label: '🎓 Thạc sĩ', value: 'Thạc sĩ', field: 'highestDegree' },
+                        { label: '🎓 Tiến sĩ', value: 'Tiến sĩ', field: 'highestDegree' }
+                      ]
+                    }
+                  ]);
+                }}
+                className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-500 font-bold rounded-xl text-[10px] cursor-pointer"
+              >
+                🔄 Khởi động lại AI
+              </button>
+            </div>
+
+            {/* Message Thread container */}
+            <div className="flex-1 overflow-y-auto py-4 space-y-4 pr-1">
+              {assistantMessages.map((msg, idx) => {
+                const isAi = msg.sender === 'ai';
+                return (
+                  <div key={idx} className={`flex gap-2.5 ${isAi ? 'justify-start text-left' : 'justify-end text-right'}`}>
+                    {isAi && (
+                      <span className="w-7 h-7 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 text-xs font-bold shadow-3xs border border-blue-100">
+                        🤖
+                      </span>
+                    )}
+                    <div className="max-w-[85%] space-y-2">
+                      <div className={`p-3.5 rounded-2xl leading-relaxed font-medium shadow-3xs ${
+                        isAi 
+                          ? 'bg-slate-50 border border-slate-100 text-slate-700 rounded-tl-sm' 
+                          : 'bg-blue-600 text-white rounded-tr-sm font-semibold'
+                      }`}>
+                        {msg.text.split('\n').map((line, lIdx) => (
+                          <span key={lIdx} className="block mt-0.5">{line}</span>
+                        ))}
+                      </div>
+                      
+                      {/* Render tick / selection options underneath AI messages if any */}
+                      {isAi && msg.options && msg.options.length > 0 && (
+                        <div className="flex flex-wrap gap-2 pt-1 justify-start">
+                          {msg.options.map((opt, oIdx) => (
+                            <button
+                              key={oIdx}
+                              type="button"
+                              onClick={() => {
+                                // 1. User choice message
+                                const userMsg = {
+                                  sender: 'user' as const,
+                                  text: `Chọn: ${opt.label}`,
+                                  timestamp: 'Vừa xong'
+                                };
+                                
+                                // 2. Update states in TutorView
+                                if (opt.field === 'highestDegree') {
+                                  setHighestDegree(opt.value);
+                                } else if (opt.field === 'major') {
+                                  setMajor(opt.value);
+                                } else if (opt.field === 'university') {
+                                  setUniversity(opt.value);
+                                } else if (opt.field === 'selectedStyles') {
+                                  if (!selectedStyles.includes(opt.value)) {
+                                    setSelectedStyles(prev => [...prev, opt.value]);
+                                  }
+                                }
+
+                                setAssistantMessages(prev => [...prev, userMsg]);
+
+                                // 3. Bot response triggers after a short simulated typing wait
+                                setTimeout(() => {
+                                  let nextText = '';
+                                  let nextOptions: any[] | undefined = undefined;
+
+                                  if (opt.field === 'highestDegree') {
+                                    nextText = `Tuyệt vời! Tôi đã cập nhật học vị cao nhất của Thầy/Cô là [${opt.value}] thành công! 🎓\nTiếp theo, Chuyên ngành đào tạo sư phạm/ngoại ngữ của Thầy/Cô là gì?`;
+                                    nextOptions = [
+                                      { label: '✏️ Sư phạm Toán', value: 'Sư phạm Toán', field: 'major' },
+                                      { label: '✏️ Sư phạm Vật lý', value: 'Sư phạm Vật lý', field: 'major' },
+                                      { label: '✏️ Sư phạm Hóa học', value: 'Sư phạm Hóa học', field: 'major' },
+                                      { label: '✏️ Ngôn ngữ Anh', value: 'Ngôn ngữ Anh', field: 'major' }
+                                    ];
+                                  } else if (opt.field === 'major') {
+                                    nextText = `Đã ghi nhận! Chuyên ngành [${opt.value}] đã được đồng bộ vào hồ sơ. 📚\nThầy/Cô đã tốt nghiệp hoặc đang theo học tại Trường / Cơ sở đào tạo nào sau đây?`;
+                                    nextOptions = [
+                                      { label: '🏫 Đại học Sư Phạm Hà Nội', value: 'Đại học Sư Phạm Hà Nội', field: 'university' },
+                                      { label: '🏫 Đại học Bách Khoa Hà Nội', value: 'Đại học Bách Khoa Hà Nội', field: 'university' },
+                                      { label: '🏫 Đại học Ngoại Thương', value: 'Đại học Ngoại Thương', field: 'university' }
+                                    ];
+                                  } else if (opt.field === 'university') {
+                                    nextText = `Thông tin trường [${opt.value}] đã được liên kết thành công! 🏢\nVề phong cách giảng dạy, Thầy/Cô tự tin nhất với phong cách nào để giới thiệu với phụ huynh?`;
+                                    nextOptions = [
+                                      { label: '💡 Kiên nhẫn, chậm rãi, bám sát SGK', value: 'Kiên nhẫn, chậm rãi, bám sát SGK', field: 'selectedStyles' },
+                                      { label: '🔥 Truyền cảm hứng, liên hệ thực tế nhiều', value: 'Truyền cảm hứng, liên hệ thực tế nhiều', field: 'selectedStyles' },
+                                      { label: '🎯 Luyện đề cấp tốc, bám sát đề thi', value: 'Luyện đề cấp tốc, bám sát đề thi', field: 'selectedStyles' }
+                                    ];
+                                  } else if (opt.field === 'selectedStyles') {
+                                    nextText = `Tuyệt vời! Phong cách giảng dạy [${opt.value}] đã được cập nhật. 🎉\nHồ sơ gia sư của Thầy/Cô đã hoàn thành thiết lập hoàn hảo và đồng bộ với giải thuật AI Matching. Thầy/Cô có thể nhấp sang tab "Hồ sơ cá nhân" để xem ngay thành phẩm rực rỡ!`;
+                                  }
+
+                                  setAssistantMessages(prev => [...prev, {
+                                    sender: 'ai',
+                                    text: nextText,
+                                    timestamp: 'Vừa xong',
+                                    options: nextOptions
+                                  }]);
+                                }, 600);
+                              }}
+                              className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-[10px] font-extrabold rounded-xl transition-all flex items-center gap-1 cursor-pointer"
+                            >
+                              <span>☑️</span>
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Custom Input controls */}
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (aiChatInput.trim() === '') return;
+                const userMsg = aiChatInput.trim();
+                setAssistantMessages(prev => [...prev, { sender: 'user', text: userMsg, timestamp: 'Vừa xong' }]);
+                setAiChatInput('');
+                
+                setTimeout(() => {
+                  setAssistantMessages(prev => [...prev, {
+                    sender: 'ai',
+                    text: `Cảm ơn Thầy/Cô! Tin nhắn "${userMsg}" của Thầy/Cô đã được tôi lưu lại để tinh chỉnh hồ sơ tốt hơn. Thầy/Cô hãy ưu tiên bấm/tick chọn nhanh các nút gợi ý ở trên để hồ sơ tự động được cập nhật nhanh nhất nhé!`,
+                    timestamp: 'Vừa xong'
+                  }]);
+                }, 600);
+              }}
+              className="flex gap-2.5 pt-3 border-t border-slate-100 shrink-0"
+            >
+              <input 
+                type="text" 
+                value={aiChatInput}
+                onChange={(e) => setAiChatInput(e.target.value)}
+                placeholder="Nhập câu trả lời hoặc hỏi tôi bất cứ điều gì..."
+                className="flex-1 px-4 py-2 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-blue-500 font-medium"
+              />
+              <button 
+                type="submit"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl transition-colors cursor-pointer"
+              >
+                Gửi
+              </button>
+            </form>
+
+          </div>
+
+          {/* Right Column: Synchronized Real-time Preview Panel (4 cols) */}
+          <div className="lg:col-span-4 bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-4 text-left">
+            <div className="border-b border-slate-100 pb-2.5">
+              <strong className="text-slate-800 font-extrabold text-xs block leading-none">⚡ Đồng bộ hồ sơ cá nhân</strong>
+              <span className="text-[9px] text-slate-400 mt-1 block">Thông tin dưới đây thay đổi ngay lập tức khi Thầy/Cô click chọn ở khung Chat!</span>
+            </div>
+
+            {/* Live profile indicators */}
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <span className="text-[10px] text-slate-400 font-extrabold block">🎓 Học vị cao nhất</span>
+                <span className="font-extrabold text-[#1E40AF] bg-blue-50/50 border border-blue-100 px-2.5 py-1.5 rounded-xl block text-xs">
+                  {highestDegree || 'Chưa điền'}
+                </span>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[10px] text-slate-400 font-extrabold block">✏️ Ngành học đào tạo</span>
+                <span className="font-extrabold text-slate-700 bg-slate-50 border border-slate-150 px-2.5 py-1.5 rounded-xl block text-xs">
+                  {major || 'Chưa điền'}
+                </span>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[10px] text-slate-400 font-extrabold block">🏫 Trường tốt nghiệp</span>
+                <span className="font-extrabold text-slate-700 bg-slate-50 border border-slate-150 px-2.5 py-1.5 rounded-xl block text-xs">
+                  {university || 'Chưa điền'}
+                </span>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[10px] text-slate-400 font-extrabold block">💡 Phong cách chính của Thầy/Cô</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedStyles.map(style => (
+                    <span key={style} className="text-[9px] bg-emerald-50 text-emerald-800 border border-emerald-100 px-2.5 py-1 rounded-lg font-bold">
+                      {style}
+                    </span>
+                  ))}
+                  {selectedStyles.length === 0 && (
+                    <span className="text-slate-400 italic font-medium text-[10px]">Chưa chọn phong cách</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Status bar */}
+              <div className="p-3 bg-emerald-50/40 border border-emerald-100 rounded-xl space-y-1.5">
+                <span className="text-[10px] text-emerald-800 font-extrabold block flex items-center gap-1">
+                  <span>✓</span>
+                  Hồ sơ liên tục kết nối với AI
+                </span>
+                <div className="w-full bg-slate-200 h-1 rounded-full overflow-hidden">
+                  <div className="bg-emerald-500 h-full" style={{ width: '100%' }}></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      )}
       {activeSubPage === 'T-03 Trạng thái xác minh' && (
         <div className="max-w-4xl mx-auto space-y-6 text-xs text-slate-700">
           

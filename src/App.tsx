@@ -5,12 +5,14 @@ import RoleSelector from './components/RoleSelector';
 import ParentView from './components/ParentView';
 import TutorView from './components/TutorView';
 import OperatorView from './components/OperatorView';
+import LandingPage from './components/LandingPage';
 import { 
   Users, User, GraduationCap, ShieldAlert, BookOpen, Layers, Menu, X, CheckSquare, 
-  ChevronRight, Compass, Settings, LogIn, ExternalLink
+  ChevronRight, Compass, Settings, LogIn, ExternalLink, Home
 } from 'lucide-react';
 
 export default function App() {
+  const [showLandingPage, setShowLandingPage] = useState<boolean>(true); // Defaults to Landing Page as requested!
   const [currentRole, setCurrentRole] = useState<Role>('parent');
   const [activeSubPage, setActiveSubPage] = useState<string>('P-02'); // Default to beautiful Chat AI page
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -44,11 +46,12 @@ export default function App() {
 
   const handleRoleChange = (role: Role) => {
     setCurrentRole(role);
+    setShowLandingPage(false);
     // Select reasonable default subpage for each role
     if (role === 'parent') {
       setActiveSubPage('P-02'); // Back to Chat AI
     } else if (role === 'tutor') {
-      setActiveSubPage('T-03 Trạng thái xác minh');
+      setActiveSubPage('Tutor-AI-Assistant');
     } else if (role === 'operator') {
       setActiveSubPage('O-01 Dashboard & hàng đợi');
     }
@@ -56,6 +59,12 @@ export default function App() {
 
   // Define sidebar menu configurations based on F-1 Sitemap for all 3 roles
   const parentMenuGroups = [
+    {
+      title: 'Trang chủ',
+      items: [
+        { id: 'landing', label: '🏠 Trang chủ giới thiệu' },
+      ]
+    },
     {
       title: 'Tìm kiếm gia sư',
       items: [
@@ -86,8 +95,15 @@ export default function App() {
 
   const tutorMenuGroups = [
     {
+      title: 'Trang chủ',
+      items: [
+        { id: 'landing', label: '🏠 Trang chủ giới thiệu' },
+      ]
+    },
+    {
       title: 'Tài khoản gia sư',
       items: [
+        { id: 'Tutor-AI-Assistant', label: '🤖 Trợ lý AI hồ sơ' },
         { id: 'T-03 Trạng thái xác minh', label: '👤 Hồ sơ cá nhân' },
         { id: 'T-01 Tạo/sửa hồ sơ', label: '✏️ Cập nhật thông tin gia sư' },
         { id: 'T-04 Hộp yêu cầu học thử', label: '📅 Quản lý lịch dạy' },
@@ -103,6 +119,12 @@ export default function App() {
   ];
 
   const operatorMenuGroups = [
+    {
+      title: 'Trang chủ',
+      items: [
+        { id: 'landing', label: '🏠 Trang chủ giới thiệu' },
+      ]
+    },
     {
       title: 'Hàng đợi vận hành',
       items: [
@@ -143,166 +165,251 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans antialiased text-slate-900 selection:bg-blue-100">
       
-      {/* 1. Header (Top Bar Contract: 3 Zones) */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-40 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          
-          {/* Zone 1: Brand Wordmark Logo */}
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-500 cursor-pointer lg:hidden"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-            <TutorMateLogo />
-          </div>
-
-          {/* Zone 2: Navigation Links based on active sitemap context */}
-          <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-600">
-            <a href="#about" className="hover:text-blue-700 transition-colors">Giới thiệu</a>
-            <a href="#how-it-works" className="hover:text-blue-700 transition-colors">Cách hoạt động</a>
-            <a href="#escrow-policy" className="hover:text-blue-700 transition-colors">Chính sách Escrow</a>
-            <a href="#safety" className="hover:text-blue-700 transition-colors">Cam kết an toàn</a>
-          </nav>
-
-          {/* Zone 3: Actions / Sign In */}
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => {
-                setAuthMode('login');
-                setIsRegisteredSuccess(false);
-                setAuthModalOpen(true);
-              }}
-              className="hidden sm:flex items-center gap-1 px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer whitespace-nowrap"
-            >
-              Đăng nhập
-            </button>
-            <button 
-              onClick={() => {
-                setAuthMode('register');
-                setIsRegisteredSuccess(false);
-                setAuthModalOpen(true);
-              }}
-              className="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-sm shadow-blue-500/10"
-            >
-              Đăng ký
-            </button>
-          </div>
-
-        </div>
-      </header>
-
-      {/* 2. Simulation Role Selector HUD Banner */}
-      <RoleSelector currentRole={currentRole} onChangeRole={handleRoleChange} />
-
-      {/* 3. Main Body Structure (Sidebar Sitemap + Desktop Canvas Workspace) */}
-      <div className="max-w-7xl w-full mx-auto flex-1 flex">
-        
-        {/* Sidebar Nav: Full Map of F-1 Sitemap for Active Role */}
-        <aside className={`w-64 border-r border-slate-200 bg-white shrink-0 hidden lg:block ${sidebarOpen ? '' : 'lg:hidden'}`}>
-          <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-            <span className="text-[10px] uppercase font-extrabold tracking-wider text-slate-400">
-              CẤU TRÚC SITEMAP F-1
-            </span>
-            <div className="flex items-center gap-1.5 mt-1.5 text-xs text-slate-700 font-bold">
-              <Compass className="w-4 h-4 text-blue-600" />
-              <span>{currentRole === 'parent' ? 'Phụ huynh · Mobile Web (Desktop hóa)' : currentRole === 'tutor' ? 'Gia sư · Mobile Web (Desktop hóa)' : 'Operator · Desktop'}</span>
-            </div>
-          </div>
-
-          <div className="p-4 space-y-5 overflow-y-auto max-h-[calc(100vh-280px)]">
-            {currentMenuGroups.map((group, gIdx) => (
-              <div key={gIdx} className="space-y-1.5">
-                <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wide block">
-                  {group.title}
-                </span>
-                <div className="space-y-1">
-                  {group.items.map((item) => {
-                    const isActive = activeSubPage === item.id;
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => setActiveSubPage(item.id)}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-[11px] font-semibold transition-all flex items-center justify-between group cursor-pointer ${
-                          isActive 
-                            ? 'bg-blue-50 text-[#1E40AF] border border-blue-100 shadow-2xs' 
-                            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-transparent'
-                        }`}
-                      >
-                        <span className="truncate">{item.label}</span>
-                        <ChevronRight className={`w-3.5 h-3.5 transition-transform duration-200 shrink-0 ${
-                          isActive ? 'text-blue-600 translate-x-0.5' : 'text-slate-300 group-hover:text-slate-500'
-                        }`} />
-                      </button>
-                    );
-                  })}
+      {showLandingPage ? (
+        /* ========================================================= */
+        /* MÀN HÌNH CHÍNH GIỚI THIỆU SẢN PHẨM (LANDING PAGE TIẾNG VIỆT) */
+        /* ========================================================= */
+        <LandingPage 
+          onFindTutor={() => {
+            setShowLandingPage(false);
+            setCurrentRole('parent');
+            setActiveSubPage('P-02');
+          }}
+          onBrowseTutors={() => {
+            setShowLandingPage(false);
+            setCurrentRole('parent');
+            setActiveSubPage('P-01');
+          }}
+          onGoToDashboard={() => setShowLandingPage(false)}
+          onSignIn={() => {
+            setAuthMode('login');
+            setIsRegisteredSuccess(false);
+            setAuthModalOpen(true);
+          }}
+          onRegister={() => {
+            setAuthMode('register');
+            setIsRegisteredSuccess(false);
+            setAuthModalOpen(true);
+          }}
+        />
+      ) : (
+        /* ========================================================= */
+        /* MÀN HÌNH BẢNG ĐIỀU KHIỂN & KHÔNG GIAN LÀM VIỆC (DASHBOARD) */
+        /* ========================================================= */
+        <>
+          {/* 1. Header (Top Bar Contract: 3 Zones) */}
+          <header className="bg-white border-b border-slate-200 sticky top-0 z-40 px-6 py-4 shadow-3xs">
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
+              
+              {/* Zone 1: Brand Wordmark Logo */}
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-500 cursor-pointer lg:hidden"
+                >
+                  <Menu className="w-5 h-5" />
+                </button>
+                <div 
+                  onClick={() => setShowLandingPage(true)} 
+                  className="cursor-pointer transition-transform hover:scale-102"
+                  title="Nhấp để về trang chủ giới thiệu"
+                >
+                  <TutorMateLogo />
                 </div>
               </div>
-            ))}
+
+              {/* Zone 2: Navigation Links based on active sitemap context */}
+              <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-600">
+                <button 
+                  onClick={() => setShowLandingPage(true)}
+                  className="hover:text-[#0B3B78] transition-colors cursor-pointer flex items-center gap-1 font-bold text-slate-800"
+                >
+                  <Home className="w-3.5 h-3.5 text-[#0B3B78]" />
+                  <span>Trang chủ giới thiệu</span>
+                </button>
+                <button 
+                  onClick={() => {
+                    setCurrentRole('parent');
+                    setActiveSubPage('P-01');
+                  }}
+                  className="hover:text-[#0B3B78] transition-colors cursor-pointer"
+                >
+                  Khám phá gia sư
+                </button>
+                <button 
+                  onClick={() => {
+                    setCurrentRole('parent');
+                    setActiveSubPage('P-02');
+                  }}
+                  className="hover:text-[#0B3B78] transition-colors cursor-pointer"
+                >
+                  Tìm gia sư AI
+                </button>
+                <button 
+                  onClick={() => setShowLandingPage(true)}
+                  className="hover:text-[#0B3B78] transition-colors cursor-pointer"
+                >
+                  Tính năng nổi bật
+                </button>
+              </nav>
+
+              {/* Zone 3: Actions / Sign In & Home Toggle */}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setShowLandingPage(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#0B3B78] bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer shadow-3xs"
+                  title="Xem màn hình chính giới thiệu"
+                >
+                  <Home className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Trang chủ</span>
+                </button>
+                <button 
+                  onClick={() => {
+                    setAuthMode('login');
+                    setIsRegisteredSuccess(false);
+                    setAuthModalOpen(true);
+                  }}
+                  className="hidden sm:flex items-center gap-1 px-4 py-2 text-xs font-semibold text-slate-600 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  Đăng nhập
+                </button>
+                <button 
+                  onClick={() => {
+                    setAuthMode('register');
+                    setIsRegisteredSuccess(false);
+                    setAuthModalOpen(true);
+                  }}
+                  className="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors cursor-pointer whitespace-nowrap shadow-sm shadow-blue-500/10"
+                >
+                  Đăng ký
+                </button>
+              </div>
+
+            </div>
+          </header>
+
+          {/* 2. Simulation Role Selector HUD Banner */}
+          <RoleSelector currentRole={currentRole} onChangeRole={handleRoleChange} />
+
+          {/* 3. Main Body Structure (Sidebar Sitemap + Desktop Canvas Workspace) */}
+          <div className="max-w-7xl w-full mx-auto flex-1 flex">
+            
+            {/* Sidebar Nav: Full Map of F-1 Sitemap for Active Role */}
+            <aside className={`w-64 border-r border-slate-200 bg-white shrink-0 hidden lg:block ${sidebarOpen ? '' : 'lg:hidden'}`}>
+              <div className="p-4 border-b border-slate-100 bg-slate-50/50">
+                <span className="text-[10px] uppercase font-extrabold tracking-wider text-slate-400">
+                  CẤU TRÚC SITEMAP F-1
+                </span>
+                <div className="flex items-center gap-1.5 mt-1.5 text-xs text-slate-700 font-bold">
+                  <Compass className="w-4 h-4 text-blue-600" />
+                  <span>{currentRole === 'parent' ? 'Phụ huynh · Mobile Web (Desktop hóa)' : currentRole === 'tutor' ? 'Gia sư · Mobile Web (Desktop hóa)' : 'Operator · Desktop'}</span>
+                </div>
+              </div>
+
+              <div className="p-4 space-y-5 overflow-y-auto max-h-[calc(100vh-280px)]">
+                {currentMenuGroups.map((group, gIdx) => (
+                  <div key={gIdx} className="space-y-1.5">
+                    <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wide block">
+                      {group.title}
+                    </span>
+                    <div className="space-y-1">
+                      {group.items.map((item) => {
+                        const isActive = (!showLandingPage && activeSubPage === item.id) || (showLandingPage && item.id === 'landing');
+                        return (
+                          <button
+                            key={item.id}
+                            onClick={() => {
+                              if (item.id === 'landing') {
+                                setShowLandingPage(true);
+                              } else {
+                                setShowLandingPage(false);
+                                setActiveSubPage(item.id);
+                              }
+                            }}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-[11px] font-semibold transition-all flex items-center justify-between group cursor-pointer ${
+                              isActive 
+                                ? 'bg-blue-50 text-[#1E40AF] border border-blue-100 shadow-2xs' 
+                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-transparent'
+                            }`}
+                          >
+                            <span className="truncate">{item.label}</span>
+                            <ChevronRight className={`w-3.5 h-3.5 transition-transform duration-200 shrink-0 ${
+                              isActive ? 'text-blue-600 translate-x-0.5' : 'text-slate-300 group-hover:text-slate-500'
+                            }`} />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </aside>
+
+            {/* Workspace Center Content */}
+            <main className="flex-1 p-6 md:p-8 overflow-x-hidden">
+              
+              {/* Active Sitemap Location HUD (Unboxed clean meta design!) */}
+              <div className="flex items-center gap-2 text-xs text-slate-400 font-semibold mb-6">
+                <span>Sitemap</span>
+                <span aria-hidden="true">&middot;</span>
+                <span className="capitalize">{currentRole === 'parent' ? 'Phụ huynh & Học sinh' : currentRole === 'tutor' ? 'Gia sư (Tutor)' : 'Điều phối viên (Operator)'}</span>
+                <span aria-hidden="true">&middot;</span>
+                <span className="text-slate-700 font-bold">
+                  {(() => {
+                    const foundItem = currentMenuGroups
+                      .flatMap(g => g.items)
+                      .find(item => item.id === activeSubPage);
+                    return foundItem ? foundItem.label : activeSubPage;
+                  })()}
+                </span>
+              </div>
+
+              {/* Active Dashboard Views */}
+              {currentRole === 'parent' && (
+                <ParentView 
+                  activeSubPage={activeSubPage} 
+                  onNavigateSubPage={(pageId) => setActiveSubPage(pageId)} 
+                  currentProfile={currentProfile}
+                  updateGlobalProfile={handleUpdateProfile}
+                />
+              )}
+
+              {currentRole === 'tutor' && (
+                <TutorView 
+                  activeSubPage={activeSubPage} 
+                  onNavigateSubPage={(pageId) => setActiveSubPage(pageId)} 
+                />
+              )}
+
+              {currentRole === 'operator' && (
+                <OperatorView 
+                  activeSubPage={activeSubPage} 
+                  onNavigateSubPage={(pageId) => setActiveSubPage(pageId)} 
+                />
+              )}
+
+            </main>
+
           </div>
-        </aside>
 
-        {/* Workspace Center Content */}
-        <main className="flex-1 p-6 md:p-8 overflow-x-hidden">
-          
-          {/* Active Sitemap Location HUD (Unboxed clean meta design!) */}
-          <div className="flex items-center gap-2 text-xs text-slate-400 font-semibold mb-6">
-            <span>Sitemap</span>
-            <span aria-hidden="true">&middot;</span>
-            <span className="capitalize">{currentRole === 'parent' ? 'Phụ huynh & Học sinh' : currentRole === 'tutor' ? 'Gia sư (Tutor)' : 'Điều phối viên (Operator)'}</span>
-            <span aria-hidden="true">&middot;</span>
-            <span className="text-slate-700 font-bold">
-              {(() => {
-                const foundItem = currentMenuGroups
-                  .flatMap(g => g.items)
-                  .find(item => item.id === activeSubPage);
-                return foundItem ? foundItem.label : activeSubPage;
-              })()}
-            </span>
-          </div>
-
-          {/* Active Dashboard Views */}
-          {currentRole === 'parent' && (
-            <ParentView 
-              activeSubPage={activeSubPage} 
-              onNavigateSubPage={(pageId) => setActiveSubPage(pageId)} 
-              currentProfile={currentProfile}
-              updateGlobalProfile={handleUpdateProfile}
-            />
-          )}
-
-          {currentRole === 'tutor' && (
-            <TutorView 
-              activeSubPage={activeSubPage} 
-              onNavigateSubPage={(pageId) => setActiveSubPage(pageId)} 
-            />
-          )}
-
-          {currentRole === 'operator' && (
-            <OperatorView 
-              activeSubPage={activeSubPage} 
-              onNavigateSubPage={(pageId) => setActiveSubPage(pageId)} 
-            />
-          )}
-
-        </main>
-
-      </div>
-
-      {/* 4. Footer */}
-      <footer className="bg-slate-900 text-slate-400 border-t border-slate-800 px-6 py-6 mt-auto text-xs">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="font-medium text-slate-500 text-center md:text-left">
-            &copy; {new Date().getFullYear()} tutor<strong>mate</strong> EdTech Vietnam. Bảo lưu mọi quyền.
-          </p>
-          <div className="flex flex-wrap justify-center gap-6 font-semibold text-slate-400">
-            <a href="#terms" className="hover:text-white transition-colors">Điều khoản sử dụng</a>
-            <a href="#privacy" className="hover:text-white transition-colors">Chính sách bảo mật</a>
-            <a href="#support" className="hover:text-white transition-colors">Trung tâm hỗ trợ</a>
-          </div>
-        </div>
-      </footer>
+          {/* 4. Footer */}
+          <footer className="bg-slate-900 text-slate-400 border-t border-slate-800 px-6 py-6 mt-auto text-xs">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="font-medium text-slate-500 text-center md:text-left">
+                &copy; {new Date().getFullYear()} tutor<strong>mate</strong> / tutor<strong>match</strong> EdTech Vietnam. Bảo lưu mọi quyền.
+              </p>
+              <div className="flex flex-wrap justify-center gap-6 font-semibold text-slate-400">
+                <button onClick={() => setShowLandingPage(true)} className="hover:text-white transition-colors cursor-pointer">
+                  Màn hình chính giới thiệu
+                </button>
+                <a href="#terms" className="hover:text-white transition-colors">Điều khoản sử dụng</a>
+                <a href="#privacy" className="hover:text-white transition-colors">Chính sách bảo mật</a>
+                <a href="#support" className="hover:text-white transition-colors">Trung tâm hỗ trợ</a>
+              </div>
+            </div>
+          </footer>
+        </>
+      )}
 
       {/* 5. Custom Auth Modal (Login / Register / Success with Facebook & Zalo Communities) */}
       {authModalOpen && (
